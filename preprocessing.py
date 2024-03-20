@@ -23,6 +23,8 @@ import os
 from PIL import Image
 from torch.utils.data import Dataset
 
+target_size = (200, 200)
+
 class ImageFolderDataset(Dataset):
     def __init__(self, data_dir, transform=None, target_size=(100, 100), split='train'):
         self.data_dir = data_dir
@@ -58,13 +60,13 @@ class ImageFolderDataset(Dataset):
 from torch.utils.data import random_split
 
 dataset_dir = 'dataset/'
-full_dataset = ImageFolderDataset(dataset_dir, transform=transform)
+full_dataset = ImageFolderDataset(dataset_dir, transform=transform, target_size=target_size)
 
 classes = full_dataset.classes
 
 # Calculate the split sizes
 num_samples = len(full_dataset)
-train_size = int(num_samples * 0.9)
+train_size = int(num_samples * 0.8)
 test_size = num_samples - train_size
 
 # Split the dataset
@@ -90,27 +92,23 @@ def imshow(img):
 # imshow(torchvision.utils.make_grid(images))
 # # print labels
 # print(' '.join(f'{classes[labels[j]]:5s}' for j in range(batch_size)))
-    
-# 49% accuracy: 20 epochs, 0.9 train split
+
+kernel_size = 25
 
 class Net(nn.Module):
     def __init__(self):
         super().__init__()
-        self.conv1 = nn.Conv2d(3, 6, 25)
+        self.conv1 = nn.Conv2d(3, 6, kernel_size)
         self.pool = nn.MaxPool2d(2, 2)
-        self.conv2 = nn.Conv2d(6, 20, 25)
-        # self.size_set = False
-        self.fc1 = nn.Linear(20 * 7 * 7, 432)
+        self.conv2 = nn.Conv2d(6, 20, kernel_size)
+        self.fc1 = nn.Linear(20 * 32 * 32, 432)
         self.fc2 = nn.Linear(432, 200)
-        self.fc3 = nn.Linear(200, 142)
+        self.fc3 = nn.Linear(200, len(classes))
 
     def forward(self, x):
         x = self.pool(F.relu(self.conv1(x)))
         x = self.pool(F.relu(self.conv2(x)))
         x = torch.flatten(x, 1) # flatten all dimensions except batch
-        # if not self.size_set:
-        #     self.size_set = True
-        #     self.fc1 = nn.Linear(x.size(dim=1), 432)
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         x = self.fc3(x)
@@ -122,7 +120,7 @@ net = Net()
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
-for epoch in range(20):  # loop over the dataset multiple times
+for epoch in range(5):  # loop over the dataset multiple times
     running_loss = 0.0
     for i, data in enumerate(trainloader, 0):
         # get the inputs; data is a list of [inputs, labels]
@@ -137,7 +135,7 @@ for epoch in range(20):  # loop over the dataset multiple times
         loss.backward()
         optimizer.step()
 
-        print(epoch, i)
+        print(i)
 
         # print statistics
         running_loss += loss.item()
@@ -150,22 +148,22 @@ print('Finished Training')
 PATH = './classfier1.pth'
 torch.save(net.state_dict(), PATH)
 
-# dataiter = iter(testloader)
-# images, labels = next(dataiter)
+dataiter = iter(testloader)
+images, labels = next(dataiter)
 
 # # print images
 # imshow(torchvision.utils.make_grid(images))
-# print('GroundTruth: ', ' '.join(f'{classes[labels[j]]:5s}' for j in range(4)))
+# print('Ground Truth: ', ' '.join(f'{classes[labels[j]]:5s}' for j in range(16)))
 
 net = Net()
 net.load_state_dict(torch.load(PATH))
 
 # outputs = net(images)
 
-_, predicted = torch.max(outputs, 1)
+# _, predicted = torch.max(outputs, 1)
 
-print('Predicted: ', ' '.join(f'{classes[predicted[j]]:5s}'
-                              for j in range(4)))
+# print('Predicted: ', ' '.join(f'{classes[predicted[j]]:5s}'
+#                               for j in range(16)))
 
 correct = 0
 total = 0
@@ -180,7 +178,7 @@ with torch.no_grad():
         total += labels.size(0)
         correct += (predicted == labels).sum().item()
 
-print(f'Accuracy of the network on the 10000 test images: {100 * correct / total} %')
+print(f'Accuracy of the network on the {total} test images: {100 * correct / total} %')
 
 # prepare to count predictions for each class
 correct_pred = {classname: 0 for classname in classes}
