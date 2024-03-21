@@ -55,6 +55,8 @@ input_dir = 'inputs/'
 inputs = ImageFolderDataset(dataset_dir, input_dir, transform=transform)
 classes = inputs.classes
 
+print(classes)
+
 class Net(nn.Module):
     def __init__(self):
         super().__init__()
