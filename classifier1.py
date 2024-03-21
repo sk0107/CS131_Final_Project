@@ -36,7 +36,7 @@ class ImageFolderDataset(Dataset):
             label_dir = os.path.join(data_dir, label)
             for image_file in os.listdir(label_dir):
                 image_file_ext = image_file[image_file.rfind('.') + 1:]
-                valid_file_exts = ['jpg', 'jpeg', 'png', 'gif']
+                valid_file_exts = ['jpg', 'jpeg', 'png', 'gif', 'webp']
                 if image_file_ext in valid_file_exts:
                     image_path = os.path.join(label_dir, image_file)
                     self.image_paths.append(image_path)
@@ -122,7 +122,7 @@ net = Net()
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
-for epoch in range(20):  # loop over the dataset multiple times
+for epoch in range(40):  # loop over the dataset multiple times
     running_loss = 0.0
     for i, data in enumerate(trainloader, 0):
         # get the inputs; data is a list of [inputs, labels]
@@ -147,7 +147,7 @@ for epoch in range(20):  # loop over the dataset multiple times
 
 print('Finished Training')
 
-PATH = './classfier1.pth'
+PATH = 'classfier1.pth'
 torch.save(net.state_dict(), PATH)
 
 # dataiter = iter(testloader)
@@ -180,7 +180,7 @@ with torch.no_grad():
         total += labels.size(0)
         correct += (predicted == labels).sum().item()
 
-print(f'Accuracy of the network on the 10000 test images: {100 * correct / total} %')
+print(f'Accuracy of the network on the {total} test images: {100 * correct / total} %')
 
 # prepare to count predictions for each class
 correct_pred = {classname: 0 for classname in classes}
