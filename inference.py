@@ -51,9 +51,11 @@ class ImageFolderDataset(Dataset):
         return image
     
 dataset_dir = 'dataset/'
-input_dir = 'input/'
+input_dir = 'inputs/'
 inputs = ImageFolderDataset(dataset_dir, input_dir, transform=transform)
 classes = inputs.classes
+
+print(classes)
 
 class Net(nn.Module):
     def __init__(self):
