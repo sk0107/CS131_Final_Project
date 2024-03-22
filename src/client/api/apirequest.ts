@@ -1,4 +1,4 @@
-const API_URL = "http://127.0.0.1:8000/";
+const API_URL = "http://127.0.0.1:8000";
 
 class HTTPError extends Error {
   status: number;
@@ -22,12 +22,14 @@ const apiRequest = async (method: string, path: string, body: any = null): Promi
     body: null,
   };
 
-  if (body instanceof FormData) {
-    options.body = body;
-  } else if (body) {
-    options.headers["Content-Type"] = "application/json";
-    options.body = JSON.stringify(body);
-  }
+  options.body = body;
+
+  // if (body instanceof FormData) {
+  //   options.body = body;
+  // } else if (body) {
+  //   options.headers["Content-Type"] = "application/json";
+  //   options.body = JSON.stringify(body);
+  // }
 
   let uri = API_URL + path;
   let response = await fetch(uri, options);

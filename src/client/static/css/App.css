@@ -15,6 +15,7 @@
 #left_block {
   width: 360px;
   height: 500px;
+  display: flex;
   background: red;
 }
 
@@ -93,4 +94,31 @@
 #upload_photo {
   position: absolute;
   top: 400px;
+}
+
+#left_screen {
+  height: 200px;
+  width: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background-color: black;
+  margin: auto;
+}
+
+#right_screen {
+  position: absolute;
+  top: 250px;
+  right: 30px;
+  height: 100px;
+  width: 300px;
+  background-color: black;
+  margin: auto;
+}
+
+#identified_species, #description {
+  /* position: absolute; */
+  color:white;
+  text-align: center;
 }

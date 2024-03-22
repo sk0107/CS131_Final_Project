@@ -1,6 +1,6 @@
 import './css/App.css';
 import React, { useRef, useEffect, useState } from 'react';
-import apiRequest from '../api/apirequest';
+import apiRequest from '../api/apirequest.ts';
 
 interface ImageDimensions {
   height: number;
@@ -69,17 +69,28 @@ function Pokedex() {
     metadata.append("file", newImage);
     metadata.append("height", imageHeight.toString());
     metadata.append("width", imageWidth.toString());
-    await apiRequest("POST", "/upload", { metadata: metadata });
+    let response = await apiRequest("POST", "/upload/", metadata);
+    const species = document.getElementById("identified_species");
+    if (species) {
+      species.innerHTML = response.species;
+    }
+    const description = document.getElementById("description");
+    if (description) {
+      description.innerHTML = response.description;
+    }
     setSelectedFile(null);
   }
 
-  // TODO complete JSX
   return (
     <div id="Pokedex">
       <div id="left_block">
         <div id="camera">
           <div id="outer_circle"></div>
           <div id="inner_circle"></div>
+        </div>
+        <div id="left_screen">
+            <div id="identified_species">No Pokemon Identified</div>
+            <div id="description"></div>
         </div>
       </div>
       <div id="spine">
@@ -95,6 +106,9 @@ function Pokedex() {
             <input type="file" name="file" id="fileInput" ref={fileInputRef} hidden />
           </form>
           <button id="upload_photo" onClick={onUploadPhoto}>Take Photo</button>
+        </div>
+        <div id="right_screen">
+
         </div>
         <div id="right_block_after_corner"></div>
       </div>

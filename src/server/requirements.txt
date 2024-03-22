@@ -1,0 +1,4 @@
+Pillow
+numpy
+djangorestframework
+django-cors-headers
